@@ -7,9 +7,12 @@ import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnDestroy {
-  scanResult: any;
+  scanResult = 'djhasgdhja';
+  showCamera = false;
 
-  constructor() {}
+  constructor() {
+    // BarcodeScanner.prepare();
+  }
 
   async checkPermission() {
     try {
@@ -18,6 +21,13 @@ export class HomePage implements OnDestroy {
 
       if (status.granted) {
         return true;
+      }
+
+      if (status.neverAsked) {
+        const c = confirm(
+          'We need your permission to use your camera to be able to scan Qr codes'
+        );
+        return c;
       }
 
       return false;
@@ -35,17 +45,22 @@ export class HomePage implements OnDestroy {
     try {
       BarcodeScanner.hideBackground();
       document.querySelector('body')?.classList.add('scanner-active');
+      this.showCamera = true;
       const result = await BarcodeScanner.startScan();
+      this.showCamera = false;
       if (result.hasContent) {
         this.scanResult = result.content;
       }
-    } catch (error) {}
+    } catch (error) {
+      this.showCamera = false;
+    }
   }
 
   stopScan() {
     BarcodeScanner.showBackground();
     document.querySelector('body')?.classList.remove('scanner-active');
     BarcodeScanner.stopScan();
+    this.showCamera = false;
   }
 
   ngOnDestroy(): void {
