@@ -1,44 +1,67 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
+<ion-header [translucent]="true" [hidden]="showCamera">
+  <ion-toolbar>
     <ion-title> QR Scanner </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<div class="barcode-scanner-container">
-  <div class="barcode-scanner--area--container">
-    <div class="relative">
-      <p>Aim your camera at a barcode</p>
-    </div>
-    <div class="square surround-cover">
-      <div class="barcode-scanner--area--outer surround-cover">
-        <div class="barcode-scanner--area--inner"></div>
-      </div>
+<ion-content [fullscreen]="true" [hidden]="showCamera">
+  <div class="result-page">
+    <ion-card [hidden]="scanResult === null">
+      <ion-card-header>
+        <ion-card-title>Result</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-textarea [value]="scanResult"> </ion-textarea>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="button-container">
+      <ion-button expand="block" (click)="startScan()">Scan QR Code</ion-button>
     </div>
   </div>
-</div>
 
-<ion-content [fullscreen]="true">
-  <div class="container">
-    <div class="w-full">
-      <div class="button-container">
-        <ion-button expand="block" (click)="startScan()" [hidden]="showCamera"
-          >Scan QR Code</ion-button
-        >
-        <ion-button expand="block" (click)="stopScan()" [hidden]="!showCamera"
-          >Stop QR Code</ion-button
-        >
+  <div class="footer">
+    <div class="content"></div>
+  </div>
+</ion-content>
+
+<ion-content [fullscreen]="true" [hidden]="!showCamera">
+  <div class="scan-area">
+    <div class="header">
+      <div class="container">
+        <div>
+          <ion-icon
+            name="{{showFlash?'flash-outline':'flash-off-outline'}}"
+            (click)="toggleTorch()"
+          ></ion-icon>
+        </div>
+        <div>
+          <ion-icon
+            name="camera-reverse-outline"
+            (click)="toggleCamera()"
+          ></ion-icon>
+        </div>
       </div>
+    </div>
 
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>Result</ion-card-title>
-        </ion-card-header>
+    <div class="button-container">
+      <ion-button expand="block" (click)="stopScan()"
+        >Cancel Scanning</ion-button
+      >
+    </div>
+  </div>
 
-        <ion-card-content>
-          <ion-textarea placeholder="Type something here" [value]="scanResult">
-          </ion-textarea>
-        </ion-card-content>
-      </ion-card>
+  <div class="barcode-scanner-container">
+    <div class="barcode-scanner--area--container">
+      <!-- <div class="relative">
+        <p>Aim your camera at a barcode</p>
+      </div> -->
+      <div class="square surround-cover">
+        <div class="barcode-scanner--area--outer surround-cover">
+          <div class="barcode-scanner--area--inner"></div>
+        </div>
+      </div>
     </div>
   </div>
 </ion-content>

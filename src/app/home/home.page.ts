@@ -1,5 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
+import {
+  BarcodeScanner,
+  CameraDirection,
+} from '@capacitor-community/barcode-scanner';
 
 @Component({
   selector: 'app-home',
@@ -7,11 +10,28 @@ import { BarcodeScanner } from '@capacitor-community/barcode-scanner';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnDestroy {
-  scanResult = 'djhasgdhja';
+  scanResult: string | null = null;
   showCamera = false;
+  showFlash = false;
+  cameraDirection: CameraDirection = 'back';
 
   constructor() {
-    // BarcodeScanner.prepare();
+    BarcodeScanner.getTorchState().then((e) => {
+      this.showFlash = e.isEnabled;
+    });
+  }
+
+  async toggleTorch() {
+    await BarcodeScanner.toggleTorch();
+    const torchStatus = await BarcodeScanner.getTorchState();
+
+    this.showFlash = torchStatus.isEnabled;
+  }
+
+  toggleCamera() {
+    this.cameraDirection = this.cameraDirection === 'back' ? 'front' : 'back';
+    BarcodeScanner.stopScan();
+    this.startScan();
   }
 
   async checkPermission() {
@@ -46,7 +66,9 @@ export class HomePage implements OnDestroy {
       BarcodeScanner.hideBackground();
       document.querySelector('body')?.classList.add('scanner-active');
       this.showCamera = true;
-      const result = await BarcodeScanner.startScan();
+      const result = await BarcodeScanner.startScan({
+        cameraDirection: this.cameraDirection,
+      });
       this.showCamera = false;
       if (result.hasContent) {
         this.scanResult = result.content;
